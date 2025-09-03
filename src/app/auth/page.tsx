@@ -1,3 +1,4 @@
+// app/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -6,7 +7,6 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { useRouter } from "next/navigation";
 import { FirebaseError } from "firebase/app";
 
 export default function AuthPage() {
@@ -14,29 +14,22 @@ export default function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
 
     try {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
+        console.log("✅ Logged in");
       } else {
         await createUserWithEmailAndPassword(auth, email, password);
+        console.log("🎉 Signed up");
       }
-
-      // ✅ Redirect to ecommerce main page
-      router.push("/shop");
     } catch (err) {
-      if (err instanceof FirebaseError)
+        if(err instanceof FirebaseError)
       setError(err.message);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -70,9 +63,8 @@ export default function AuthPage() {
           <button
             type="submit"
             className="w-full bg-blue-600 text-white rounded-lg px-4 py-2 hover:bg-blue-700 transition"
-            disabled={loading}
           >
-            {loading ? "Please wait..." : isLogin ? "Login" : "Sign Up"}
+            {isLogin ? "Login" : "Sign Up"}
           </button>
         </form>
 
